@@ -1,11 +1,1217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mon site GitHub Pages</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dashboard — Camping La Plage (Argelès-sur-Mer)</title>
+  <link rel="icon" href="logo-camping-la-plage.png">
+  <style>
+    /* ===== Thème & variables ===== */
+    :root{
+      --bg: #f6f7fb;
+      --bg-elev: #ffffff;
+      --card: #ffffff;
+      --bd: #e7e8ef;
+      --txt: #1f2330;
+      --muted: #6b7280;
+      --primary: #1e88e5;
+      --primary-600:#1565c0;
+      --accent:#00bcd4;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --ok:#16a34a;
+      --ok-bg:#dcfce7;
+      --warn-bg:#fff7ed;
+      --bad-bg:#fee2e2;
+      --ring: 0 0 0 3px rgba(30,136,229,.18);
+      --shadow: 0 6px 24px rgba(16,24,40,.06), 0 2px 8px rgba(16,24,40,.05);
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0e14;
+        --bg-elev:#0f131b;
+        --card:#0f131b;
+        --bd:#232a36;
+        --txt:#e5e7eb;
+        --muted:#a1a1aa;
+        --primary:#60a5fa;
+        --primary-600:#3b82f6;
+        --accent:#22d3ee;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
+      color:var(--txt);
+      line-height:1.5;
+      padding-bottom: env(safe-area-inset-bottom);
+      -webkit-text-size-adjust: 100%;
+    }
+    /* Fluid type for better scaling */
+    :root{ font-size: clamp(15px, 1.2vw + 0.6rem, 17px); }
+    h1,h2,h3{ line-height:1.2 }
+
+    /* Reduce motion if requested */
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+    }
+
+    /* ===== Header ===== */
+    header{
+      position:sticky;top:0;background:rgba(255,255,255,.7);
+      backdrop-filter:saturate(140%) blur(8px);
+      border-bottom:1px solid var(--bd);padding:10px 16px;
+      display:flex;gap:12px;align-items:center;z-index:10
+    }
+    @media (prefers-color-scheme: dark){ header{background:rgba(15,19,27,.6);} }
+    h1{font-size:18px;margin:0 8px 0 0;display:flex;gap:8px;align-items:center;white-space:nowrap}
+    h1 .brand{height:28px; width:auto; object-fit:contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,.12));}
+    nav{display:flex;gap:8px;flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scroll-snap-type:x proximity;}
+    nav::-webkit-scrollbar{ display:none; }
+    .tab{border:1px solid var(--bd);background:var(--bg-elev);padding:10px 14px;border-radius:999px;cursor:pointer;display:flex;gap:6px;align-items:center;font-weight:600;color:var(--muted);transition:.2s; scroll-snap-align:start; flex:0 0 auto;}
+    .tab:hover{transform:translateY(-1px);box-shadow:var(--shadow);color:var(--txt)}
+    .tab.active{background:var(--primary);color:#fff;border-color:transparent}
+    .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .theme-toggle{border:1px solid var(--bd);background:var(--bg-elev);border-radius:10px;padding:8px 12px;cursor:pointer;min-height:44px}
+
+    /* ===== Layout ===== */
+    main{padding:18px;max-width:1200px;margin:0 auto}
+    h2{margin:0 0 8px 0;font-size:18px}
+    .sub{color:var(--muted);font-size:12px;margin-top:-2px}
+    .card{background:var(--card);border:1px solid var(--bd);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .toolbar{display:flex;gap:8px;margin:10px 0 14px;flex-wrap:wrap}
+    .field{display:flex;flex-direction:column;gap:6px; min-width: min(260px, 100%);}
+    .field label{font-size:12px;color:var(--muted)}
+    input,select,textarea{padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--bg-elev);color:var(--txt);outline:none;transition:border .15s, box-shadow .15s; min-height:44px}
+    input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:var(--ring)}
+    .btn{border:1px solid var(--bd);background:var(--bg-elev);padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px; min-height:44px}
+    .btn:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+    .btn.primary{background:var(--primary);color:#fff;border-color:transparent}
+    .btn.ghost{background:transparent}
+    .btn.danger{background:color-mix(in srgb, var(--danger) 12%, transparent);border-color:color-mix(in srgb, var(--danger) 35%, var(--bd));color:inherit}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bd);border-radius:999px;font-size:12px;color:var(--muted)}
+    .role{font-weight:700;text-transform:capitalize}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
+    thead th{position:sticky;top:0;background:linear-gradient(0deg,var(--bg),var(--bg-elev));border-bottom:1px solid var(--bd);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+    th,td{border-bottom:1px solid var(--bd);text-align:left;padding:10px 8px;font-size:14px; vertical-align: top;}
+    tbody tr{transition:background .15s}
+    tbody tr:hover{background:color-mix(in srgb, var(--primary) 7%, transparent)}
+    tbody tr.low{background:color-mix(in srgb, var(--danger) 6%, transparent)}
+
+    /* Mobile: tables as stacked cards */
+    @media (max-width: 760px){
+      table thead{ display:none; }
+      table, tbody, tr, td{ display:block; width:100%; }
+      tbody tr{ margin:10px 0; padding:10px; border:1px solid var(--bd); border-radius:12px; background:var(--bg-elev); }
+      td{ border:none; padding:6px 0; }
+      td::before{
+        content: attr(data-label);
+        display:block;
+        font-size:12px;
+        color:var(--muted);
+        margin-bottom:2px;
+      }
+      td:last-child{ padding-bottom:0; }
+      td:first-child{ padding-top:0; }
+    }
+
+    .pill{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--bd);display:inline-flex;gap:8px;align-items:center}
+    .pill.ok{background:var(--ok-bg)}
+    .pill.warn{background:var(--warn-bg)}
+    .pill.bad{background:var(--bad-bg)}
+
+    .status{padding:5px 20px;border-radius:999px;font-weight:600;font-size:12px;border:5px solid var(--bd)}
+    .status.en_attente{background:color-mix(in srgb, var(--warn) 50%, transparent); color:#8a4b00;}
+    .status.en_cours{background:color-mix(in srgb, var(--primary) 50%, transparent); color:#003c86;}
+    .status.termine{background:color-mix(in srgb, var(--ok) 50%, transparent); color:#046c2c;}
+
+    .prio{padding:2px 8px;border-radius:999px;border:1px solid var(--bd);font-size:12px}
+    .prio.basse{opacity:.7}
+    .prio.normale{background:var(--bg-elev)}
+    .prio.haute{background:color-mix(in srgb, var(--warn) 10%, transparent)}
+    .prio.critique{background:color-mix(in srgb, var(--danger) 14%, transparent);font-weight:700}
+
+    .muted{color:var(--muted);font-size:12px}
+    .kpi{display:flex;flex-direction:column;gap:10px}
+    .kpi .value{font-size:28px;font-weight:800}
+    .progress{height:8px;background:var(--bg);border-radius:999px;overflow:hidden;border:1px solid var(--bd)}
+    .bar{height:100%;background:linear-gradient(90deg, var(--primary), var(--accent))}
+    .empty{border:1px dashed var(--bd);border-radius:12px;padding:16px;text-align:center;color:var(--muted)}
+
+    /* ===== Chat ===== */
+    .chat-box{
+      border:1px solid var(--bd);
+      background:var(--bg-elev);
+      border-radius:12px;
+      height:360px;
+      overflow:auto;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .msg{display:flex;gap:8px;align-items:flex-end;max-width:78%}
+    .msg.self{margin-left:auto;justify-content:flex-end}
+    .bubble{
+      padding:8px 12px;border-radius:14px;border:1px solid var(--bd);
+      background:var(--bg); line-height:1.25
+    }
+    .meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .role-chip{font-size:11px;border:1px solid var(--bd);padding:2px 6px;border-radius:999px}
+
+    /* Couleurs par canal / rôle */
+    .bubble.technique{ background: color-mix(in srgb, var(--primary) 20%, transparent); }
+    .bubble.menage{ background: color-mix(in srgb, var(--warn) 22%, transparent); }
+    .msg.self .bubble{ outline:2px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+
+    /* Barre d'édition */
+    .chat-input{ margin-top:10px; display:flex; gap:8px; }
+    .chat-input input{ flex:1; }
+
+    #toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--bg-elev);border:1px solid var(--bd);padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:50}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+
+/* ===== Gate (connexion plein écran) – version glass + ring ===== */
+#gate{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;
+background: radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--primary) 35%, #000 0%), transparent 60%),
+radial-gradient(1200px 800px at 110% 110%, color-mix(in oklab, var(--accent) 35%, #000 0%), transparent 60%),
+linear-gradient(135deg, color-mix(in oklab, var(--primary) 12%, #000 0%), color-mix(in oklab, var(--accent) 12%, #000 0%));
+z-index:100;
+}
+#gate{ opacity:0; transform:scale(1.02); transition:opacity .28s, transform .28s; }
+#gate.open{ opacity:1; transform:none; }
+
+#gate .box{width:min(460px,100%);background:rgba(255,255,255,.85);border:1px solid var(--bd);border-radius:20px;
+box-shadow:var(--shadow);padding:26px 22px 22px;position:relative;overflow:hidden;
+backdrop-filter:blur(14px) saturate(120%);
+}
+@media (prefers-color-scheme: dark){
+#gate .box{background:rgba(15,19,27,.85);}
+}
+#gate .ring{position:absolute;inset:-1px;border-radius:21px;padding:1px;pointer-events:none;}
+#gate .ring::before{content:"";position:absolute;inset:0;border-radius:inherit;background:
+conic-gradient(from 0deg at 50% 50%, var(--primary), var(--accent), var(--primary));
+-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+-webkit-mask-composite:xor;mask-composite:exclude;opacity:.65;filter:blur(.6px);
+}
+#gate h2{margin:0;font-size:24px;text-align:center}
+#gate .sub{text-align:center;margin:6px 0 14px;color:var(--muted)}
+#gate .actions{display:flex;gap:10px;margin-top:14px}
+#gate .actions .btn{flex:1}
+#swap{margin-top:14px;text-align:center;font-size:14px;color:var(--muted)}
+#swap .link{color:var(--primary);cursor:pointer;font-weight:600}
+.field{display:flex;flex-direction:column;gap:6px}
+
+
+/* bouton fermer */
+#gate .x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;cursor:pointer;
+border:1px solid var(--bd);background:rgba(255,255,255,.6)}
+@media (prefers-color-scheme: dark){#gate .x{background:rgba(255,255,255,.08)}}
+#gate .x:hover{transform:translateY(-1px)}
+#gate .x:active{transform:translateY(0) scale(.98)}
+#gate .x svg{width:18px;height:18px}
+@media (prefers-reduced-motion: reduce){
+  #gate, #gate::before, #gate .box{ transition:none }
+}
+:focus-visible{
+  outline:2px solid color-mix(in oklab, var(--accent) 60%, white 0%);
+  outline-offset:2px;
+}
+    /* Small screens: make toolbars single-column for readability */
+    @media (max-width: 760px){
+      .toolbar{ flex-direction:column; align-items:stretch; }
+      .right{ gap:6px; }
+      main{ padding:12px; }
+      h1 .brand{ height:24px; }
+      .grid{ grid-template-columns: 1fr; }
+      .card{ padding:14px; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Bienvenue sur mon site 🎉</h1>
-  <p>Ceci est ma première page publiée sur GitHub Pages.</p>
+<!-- ===== Gate (connexion avant application) ===== -->
+<div id="gate" aria-modal="true" role="dialog">
+<div class="box">
+<div class="ring" aria-hidden="true"></div>
+<button class="x" type="button" aria-label="Fermer" id="g_close">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+</button>
+<h2>Camping La Plage</h2>
+<p class="sub">Connectez-vous pour accéder au tableau de bord</p>
+<div id="loginPane">
+<div class="field"><label for="g_user">Identifiant</label><input id="g_user" placeholder="ex: jean" autocomplete="username"/></div>
+<div class="field"><label for="g_pwd">Mot de passe</label><input id="g_pwd" type="password" autocomplete="current-password"/></div>
+<div class="actions"><button class="btn primary" id="g_login">Se connecter</button></div>
+<div id="swap" class="muted">Pas de compte ? <span id="goReg" class="link">Créer un compte</span></div>
+</div>
+<div id="regPane" style="display:none">
+<div class="field"><label for="g_ruser">Identifiant</label><input id="g_ruser" autocomplete="username"/></div>
+<div class="field"><label for="g_rrole">Rôle</label>
+<select id="g_rrole">
+<option>administration</option><option>reception</option><option>technique</option><option>menage</option>
+</select>
+</div>
+<div class="field"><label for="g_rpwd">Mot de passe</label><input id="g_rpwd" type="password" autocomplete="new-password"/></div>
+<div class="field"><label for="g_rpwd2">Confirmer</label><input id="g_rpwd2" type="password" autocomplete="new-password"/></div>
+<div class="actions"><button class="btn" id="g_cancel">Annuler</button><button class="btn primary" id="g_reg">Créer</button></div>
+<div id="swap2" class="muted">Déjà un compte ? <span id="goLogin" class="link">Se connecter</span></div>
+</div>
+</div>
+</div>
+
+
+<script>
+// IMPORTANT : ne surtout pas appeler showGate(false) ici
+document.getElementById('g_close')?.addEventListener('click', (e)=>{
+e.preventDefault();
+// reviens au panneau login
+document.getElementById('regPane').style.display = 'none';
+document.getElementById('loginPane').style.display = 'block';
+// clear champ + focus
+document.getElementById('g_user').value = '';
+document.getElementById('g_pwd').value = '';
+document.getElementById('g_user').focus();
+// petit feedback visuel (shake léger)
+const box = document.querySelector('#gate .box');
+box?.animate(
+[{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],
+{duration:220, easing:'ease-out'}
+);
+});
+</script>
+  <!-- ===== App ===== -->
+  <div id="appRoot" style="display:none">
+    <header>
+      <h1><img class="brand" src="logo-camping-la-plage.png" alt="Camping La Plage"> <span>Tableau de bord – La Plage</span></h1>
+      <nav aria-label="Navigation principale">
+        <button class="tab" data-tab="dashboard">📊 <span>Tableau de bord</span></button>
+        <button class="tab active" data-tab="interventions">🛠️ <span>Interventions</span></button>
+        <button class="tab" data-tab="menage">🧹 <span>Ménage</span></button>
+        <button class="tab" data-tab="emplacements">📍 <span>Emplacements</span></button>
+        <button class="tab" data-tab="stock">📦 <span>Stock</span></button>
+
+        <button class="tab" data-tab="comptes">👥 <span>Comptes</span></button>
+        <button class="tab" data-tab="chat">💬 <span>Chat</span></button>
+      </nav>
+      <div class="right">
+        <span id="userBadge" class="badge" hidden>👤 <span id="userName"></span> · <span class="role" id="userRole"></span></span>
+        <button id="btnLogout" class="btn">🚪 Se déconnecter</button>
+        <button id="btnExport" class="btn">💾 Exporter</button>
+        <label class="btn" for="fileImport">📥 Importer</label>
+        <input id="fileImport" type="file" accept="application/json" style="display:none" />
+        <button id="btnReset" class="btn danger">🗑️ Remise à zéro</button>
+        <button id="theme" class="theme-toggle" title="Basculer le thème">🌓</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Interventions -->
+      <section id="interventions" class="card">
+        <h2>Interventions</h2>
+        <p class="sub">Ajoutez et suivez les tâches de maintenance.</p>
+
+        <div class="toolbar">
+          <div class="field">
+            <label for="int_titre">Titre</label>
+            <input id="int_titre" placeholder="Ex: Fuite robinet" />
+          </div>
+
+          <div class="field">
+            <label for="int_emp">Emplacement</label>
+            <input id="int_emp" placeholder="Ex: A12" />
+          </div>
+
+          <div class="field">
+            <label for="int_priorite">Priorité</label>
+            <select id="int_priorite">
+              <option>basse</option><option selected>normale</option><option>haute</option><option>critique</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="int_tech">Technicien</label>
+            <select id="int_tech"></select>
+          </div>
+
+          <button id="int_add" class="btn primary">➕ Ajouter</button>
+
+          <div class="field" style="margin-left:auto;min-width:220px">
+            <label for="int_filter">Filtrer</label>
+            <input id="int_filter" placeholder="Recherche titre, empl.…" />
+          </div>
+        </div>
+
+        <table id="tblInterv">
+          <thead>
+            <tr>
+              <th>intervention</th><th>mobilhome</th><th>Technicien</th><th>Priorité</th><th>Statut</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div id="int_empty" class="empty" hidden>Aucune intervention pour le moment.</div>
+
+        <h3 style="margin-top:16px">Interventions terminées</h3>
+        <table id="tblIntervDone">
+          <thead>
+            <tr>
+              <th>intervention</th><th>mobilhome</th><th>Priorité</th><th>Terminé le</th><th>Fait par</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="int_done_empty" class="empty" hidden>Aucune intervention terminée.</div>
+      </section>
+
+      <!-- Ménage -->
+      <section id="menage" class="card" style="display:none;">
+        <h2>Ménage</h2>
+        <p class="sub">Planifiez et contrôlez le ménage des emplacements.</p>
+        <div class="toolbar">
+          <div class="field"><label for="men_emp">Emplacement</label><input id="men_emp" placeholder="Ex: A12" /></div>
+          <div class="field"><label for="men_check">Checklist</label><input id="men_check" placeholder="standard" value="standard" /></div>
+          <div class="field"><label for="men_agent">Agent</label><input id="men_agent" placeholder="Nom" /></div>
+          <button id="men_add" class="btn primary">➕ Ajouter</button>
+        </div>
+        <table id="tblMen">
+          <thead><tr>
+            <th>ID</th><th>Empl.</th><th>Liste de contrôle</th><th>Statut</th><th>Agent</th><th>Actions</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+        <div id="men_empty" class="empty" hidden>Une tâche de ménage.</div>
+      </section>
+
+      <!-- Emplacements -->
+      <section id="emplacements" class="card" style="display:none;">
+        <h2>Emplacements</h2>
+        <p class="sub">Vue rapide de l'état des lots et hébergements.</p>
+        <div class="toolbar">
+          <div class="field"><label for="emp_code">Code</label><input id="emp_code" placeholder="Ex: A12" /></div>
+          <div class="field"><label for="emp_type">Type</label><input id="emp_type" placeholder="MH, Bungalow…" /></div>
+          <div class="field"><label for="emp_etat">État</label><select id="emp_etat"><option>libre</option><option>occupe</option><option>hors_service</option></select></div>
+          <div class="field" style="max-width:140px"><label for="emp_cap">Capacité</label><input id="emp_cap" type="number" placeholder="4" /></div>
+          <button id="emp_add" class="btn primary">➕ Ajouter</button>
+        </div>
+        <div id="gridEmp" class="grid"></div>
+        <p class="muted">Couleurs : <span class="pill ok">libre</span> <span class="pill warn">occupé</span> <span class="pill bad">hors_service</span></p>
+      </section>
+
+      <!-- Stock -->
+      <section id="stock" class="card" style="display:none;">
+        <h2>Stock</h2>
+        <p class="sub">Suivi des consommables et pièces.</p>
+        <div class="toolbar">
+          <div class="field"><label for="stk_ref">Réf</label><input id="stk_ref" placeholder="Ex: AMP-10W" /></div>
+          <div class="field"><label for="stk_nom">Nom</label><input id="stk_nom" placeholder="Ex : Ampoule 10W" /></div>
+          <div class="field"><label for="stk_cat">Catégorie</label><input id="stk_cat" placeholder="Élec, Ménage…" /></div>
+          <div class="field" style="max-width:140px"><label for="stk_qty">Qté</label><input id="stk_qty" type="number" placeholder="0" /></div>
+          <div class="field" style="max-width:140px"><label for="stk_min">Seuil mini</label><input id="stk_min" type="number" placeholder="0" /></div>
+          <button id="stk_add" class="btn primary">➕ Ajouter</button>
+        </div>
+        <table id="tblStock">
+          <thead><tr>
+            <th>ID</th><th>Réf</th><th>Nom</th><th>Catégorie</th><th>Qté</th><th>Seuil</th><th>Mouvement</th><th>Suppr.</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+        <div id="stk_empty" class="empty" hidden>Rien en stock pour l'instant.</div>
+      </section>
+
+      <!-- Comptes (admin) -->
+      <section id="comptes" class="card" style="display:none;">
+        <h2>Gestion des comptes</h2>
+        <p class="sub">Réservé à l’administrateur. Ajouter des utilisateurs, changer leur rôle, réinitialiser les mots de passe.</p>
+        <div class="toolbar">
+          <div class="field"><label for="acc_user">Identifiant</label><input id="acc_user" placeholder="ex: nora"/></div>
+          <div class="field"><label for="acc_role">Rôle</label>
+            <select id="acc_role"><option>administration</option><option selected>reception</option><option>technique</option><option>menage</option></select>
+          </div>
+          <div class="field"><label for="acc_pwd">Mot de passe</label><input id="acc_pwd" type="password" placeholder="(optionnel : auto si vide)"/></div>
+          <button id="acc_add" class="btn primary">➕ Ajouter</button>
+          <div class="muted" style="align-self:flex-end">Si vide → mot de passe généré & affiché</div>
+        </div>
+        <table id="tblUsers"><thead><tr>
+          <th>Utilisateur</th><th>Rôle</th><th>Actions</th>
+        </tr></thead><tbody></tbody></table>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashboard" class="card" style="display:none;">
+        <h2>Dashboard</h2>
+        <div id="kpi" class="grid"></div>
+        <p class="muted">Ce tableau de bord calcule des indicateurs à partir des données locales (enregistrées sur <em>cet appareil</em>).</p>
+      </section>
+
+      <!-- Chat -->
+      <section id="chat" class="card" style="display:none;">
+        <h2>Chat d’équipe</h2>
+        <p class="sub">Canaux séparés par équipes</p>
+
+        <div class="toolbar">
+          <div class="field">
+            <label for="chat_channel">Canal</label>
+            <select id="chat_channel">
+              <option value="technique">Technique</option>
+              <option value="menage">Ménage</option>
+              <option value="administration">Réception</option>
+            </select>
+          </div>
+          <div id="chat_info" class="muted" style="align-self:flex-end"></div>
+          <span style="margin-left:auto"></span>
+        </div>
+
+        <div id="chat_messages" class="chat-box" aria-live="polite"></div>
+
+        <div class="chat-input">
+          <input id="chat_text" placeholder="Écrire un message…" />
+          <button id="chat_send" class="btn primary">Envoyer</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /*********** Aides et thème ***********/
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const toast = (msg)=>{
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>t.classList.remove('show'), 1600);
+    };
+    const persist = (k,v)=>localStorage.setItem(k, JSON.stringify(v));
+    const read = (k,d)=>{ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch{ return d; } };
+
+    const THEME_KEY = 'camping_theme_v1';
+    (function initTheme(){
+      const th = read(THEME_KEY);
+      if(th==='dark'){
+        document.documentElement.style.colorScheme='dark';
+        document.documentElement.dataset.theme='dark';
+      }
+      $('#theme').addEventListener('click',()=>{
+        const isDark = document.documentElement.dataset.theme==='dark';
+        if(isDark){
+          document.documentElement.style.colorScheme='light';
+          delete document.documentElement.dataset.theme;
+          persist(THEME_KEY,'light');
+        } else {
+          document.documentElement.style.colorScheme='dark';
+          document.documentElement.dataset.theme='dark';
+          persist(THEME_KEY,'dark');
+        }
+      });
+    })();
+
+    /*********** Auth & rôles ***********/
+    const USERS_KEY = 'camping_users_v1';
+    const CUR_USER_KEY = 'camping_current_user_v1';
+    const roleTabs = {
+      administration: ['interventions','menage','emplacements','stock','dashboard','comptes','chat'],
+      reception: ['interventions','menage','emplacements','dashboard','chat'],
+      technique: ['interventions','emplacements','stock','dashboard','chat'],
+      menage : ['menage','dashboard','chat']
+    };
+
+    function getUsers(){
+      try{ return JSON.parse(localStorage.getItem(USERS_KEY)) || seedUsers(); }
+      catch{ return seedUsers(); }
+    }
+    function saveUsers(){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+    function seedUsers(){
+      const demo=[{id:nid('u'), user:'admin', role:'administration', pass:md5('admin')}];
+      localStorage.setItem(USERS_KEY, JSON.stringify(demo));
+      return demo;
+    }
+    let users = getUsers();
+    let currentUser = (()=>{ try{ return JSON.parse(localStorage.getItem(CUR_USER_KEY)); }catch{ return null; } })();
+
+    // md5 (démo hors ligne) – version compacte
+    function md5(s){function L(k,d){return(k<<d)|(k>>>32-d)}function K(G,k){var I,d,F,E,H;F=(G&2147483648);E=(k&2147483648);I=(G&1073741824);d=(k&1073741824);H=(G&1073741823)+(k&1073741823);if(I&d){return(H^2147483648^F^E)}if(I|d){if(H&1073741824){return(H^3221225472^F^E)}else{return(H^1073741824^F^E)}}else{return(H^F^E)}}function r(d,F,k){return(d&F)|((~d)&k)}function q(d,F,k){return(d&k)|(F&(~k))}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|(~k)))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="0123456789abcdef";var d="";var F=0;for(F=0;F<=3;F++){d=d+k.charAt((x>>>(F*8+4))&15)+k.charAt((x>>>(F*8))&15)}return d}function J(k){var d="";for(var F=0;F<=3;F++){d+=B(k[F])}return d}function y(Z){var d=[];for(var k=0;k<Z.length*4;k+=4){d.push(Z[k>>2]&255,(Z[k>>2]>>8)&255,(Z[k>>2]>>16)&255,(Z[k>>2]>>24)&255)}return d}var i=1732584193;var h=4023233417;var v=2562383102;var g=271733878;var a=[];var C;var m;var o;var j;var W;var V;var U;s=unescape(encodeURIComponent(s));a=e(s);W=7;V=12;U=17;i=22;for(C=0;C<a.length;C+=16){m=i;o=h;j=v;i=g;i=u(i,g,h,v,a[C+0],W,3614090360);g=u(g,i,g,h,a[C+1],V,3905402710);h=u(h,g,i,g,a[C+2],U,606105819);v=u(v,h,g,i,a[C+3],i,3250441966);i=u(i,v,h,g,a[C+4],W,4118548399);g=u(g,i,v,h,a[C+5],V,1200080426);h=u(h,g,i,v,a[C+6],U,2821735955);v=u(v,h,g,i,a[C+7],i,4249261313);i=u(i,v,h,g,a[C+8],W,1770035416);g=u(g,i,v,h,a[C+9],V,2336552879);h=u(h,g,i,v,a[C+10],U,4294925233);v=u(v,h,g,i,a[C+11],i,2304563134);i=u(i,v,h,g,a[C+12],W,1804603682);g=u(g,i,v,h,a[C+13],V,4254626195);h=u(h,g,i,v,a[C+14],U,2792965006);v=u(v,h,g,i,a[C+15],i,1236535329);i=f(i,v,h,g,a[C+1],W,4129170786);g=f(g,i,v,h,a[C+6],V,3225465664);h=f(h,g,i,v,a[C+11],U,643717713);v=f(v,h,g,i,a[C+0],i,3921069994);i=f(i,v,h,g,a[C+5],W,3593408605);g=f(g,i,v,h,a[C+10],V,38016083);h=f(h,g,i,v,a[C+15],U,3634488961);v=f(v,h,g,i,a[C+4],i,3889429444);i=f(i,v,h,g,a[C+9],W,568446438);g=f(g,i,v,h,a[C+14],V,3275163606);h=f(h,g,i,v,a[C+3],U,4107603335);v=f(v,h,g,i,a[C+8],i,1163531501);i=D(i,v,h,g,a[C+5],W,2850285829);g=D(g,i,v,h,a[C+8],V,4243563512);h=D(h,g,i,v,a[C+11],U,1735328473);v=D(v,h,g,i,a[C+14],i,2368359562);i=D(i,v,h,g,a[C+1],W,4294588738);g=D(g,i,v,h,a[C+4],V,2272392833);h=D(h,g,i,v,a[C+7],U,1839030562);v=D(v,h,g,i,a[C+10],i,4259657740);i=t(i,v,h,g,a[C+0],W,4096336452);g=t(g,i,v,h,a[C+7],V,1126891415);h=t(h,g,i,v,a[C+14],U,2878612391);v=t(v,h,g,i,a[C+5],i,4237533241);i=t(i,v,h,g,a[C+12],W,1700485571);g=t(g,i,v,h,a[C+3],V,2399980690);h=t(h,g,i,v,a[C+10],U,4293915773);v=t(v,h,g,i,a[C+1],i,2240044497);i=t(i,v,h,g,a[C+8],W,1873313359);g=t(g,i,v,h,a[C+15],V,4264355552);h=t(h,g,i,v,a[C+6],U,2734768916);v=t(v,h,g,i,a[C+13],i,1309151649);i=K(i,m);g=K(g,o);h=K(h,j);v=K(v,g)}return J([i,g,h,v])}
+
+    function refreshUserUI(){
+      const badge=$('#userBadge'); const n=$('#userName'); const r=$('#userRole');
+      if(currentUser){ badge.hidden=false; n.textContent=currentUser.user; r.textContent=currentUser.role; $('#btnLogout').style.display='inline-flex'; }
+      else { badge.hidden=true; $('#btnLogout').style.display='none'; }
+    }
+
+    function protectTabs(){
+      const role = currentUser?.role || 'menage';
+      const allowed = new Set(roleTabs[role]||[]);
+      $$('.tab').forEach(btn=>{
+        const id=btn.dataset.tab;
+        btn.style.display = allowed.has(id)? 'inline-flex':'none';
+      });
+      const visible = Array.from(document.querySelectorAll('main section')).find(s=>s.style.display!=='none');
+      const visId = visible? visible.id : null;
+      if(!visId || !allowed.has(visId)){
+        const first=[...allowed][0];
+        if(first){
+          $$('.tab').forEach(x=>x.classList.remove('active'));
+          const btn=document.querySelector(`.tab[data-tab="${first}"]`);
+          if(btn){
+            btn.classList.add('active');
+            $$('main section').forEach(s=>s.style.display='none');
+            $('#'+first).style.display='block';
+          }
+        }
+      }
+    }
+
+    function login(user, pass){
+      const u=users.find(x=>x.user===user && x.pass===md5(pass));
+      if(!u) return false;
+      currentUser={user:u.user, role:u.role};
+      localStorage.setItem(CUR_USER_KEY, JSON.stringify(currentUser));
+      return true;
+    }
+    function logout(){ currentUser=null; localStorage.removeItem(CUR_USER_KEY); showGate(true); toast('Déconnecté'); }
+    function register(user, role, pass){
+      if(users.some(u=>u.user===user)) throw new Error('Identifiant déjà utilisé');
+      const rec={id:nid('u'), user, role, pass:md5(pass)};
+      users.push(rec); saveUsers();
+    }
+    $('#btnLogout').onclick=logout;
+
+function showGate(show){
+  const el = $('#gate');
+  if(show){
+    el.style.display = 'flex';
+    // permet l'animation d'apparition
+    requestAnimationFrame(()=> el.classList.add('open'));
+    // accessibilité : focus sur le 1er champ visible
+    const target = $('#loginPane').style.display !== 'none' ? '#g_user' : '#g_ruser';
+    setTimeout(()=> $(target)?.focus(), 50);
+    // Échap pour fermer (optionnel)
+    showGate._onKey = (e)=>{ if(e.key==='Escape'){ el.classList.remove('open'); el.style.display='none'; } };
+    document.addEventListener('keydown', showGate._onKey);
+  }else{
+    el.classList.remove('open');
+    el.style.display = 'none';
+    $('#appRoot').style.display = 'block';
+    document.removeEventListener('keydown', showGate._onKey);
+    refreshUserUI(); protectTabs(); renderAll();
+  }
+  $('#appRoot').style.display = show ? 'none' : 'block';
+}
+
+    // Événements de porte
+    $('#goReg').onclick=()=>{ $('#loginPane').style.display='none'; $('#regPane').style.display='block'; };
+    $('#goLogin').onclick=()=>{ $('#regPane').style.display='none'; $('#loginPane').style.display='block'; };
+    $('#g_cancel').onclick=()=>{ $('#regPane').style.display='none'; $('#loginPane').style.display='block'; };
+    $('#g_login').onclick=()=>{
+      const u=$('#g_user').value.trim(); const p=$('#g_pwd').value;
+      if(!login(u,p)) return alert('Identifiants invalides');
+      toast('Bienvenue '+u+' 👋'); showGate(false);
+    };
+    $('#g_reg').onclick=()=>{
+      const u=$('#g_ruser').value.trim(); const r=$('#g_rrole').value; const p=$('#g_rpwd').value; const p2=$('#g_rpwd2').value;
+      if(!u||!p) return alert('Champs requis');
+      if(p!==p2) return alert('Mots de passe différents');
+      try{ register(u,r,p); toast('Compte créé ✅'); $('#regPane').style.display='none'; $('#loginPane').style.display='block'; }
+      catch(e){ alert(e.message); }
+    };
+
+    /*********** Données locales (localStorage) ***********/
+    const KEY = 'camping_app_v2';
+    const blank = { version:2, interventions: [], menage: [], emplacements: [], stock: [] };
+    let db = load();
+    function migrateDueRemoval(){
+      let changed=false;
+      (db.interventions || []).forEach(x=>{
+        if (x.due !== undefined){ delete x.due; changed = true; }
+        if (!x.createdAt){ x.createdAt = today(0); changed = true; }
+        if (x.assignedTo === undefined){ x.assignedTo = ''; changed = true; }
+        if (x.statut === 'termine'){
+          if (!x.finishedAt){ x.finishedAt = today(0); changed = true; }
+          if (x.finishedBy === undefined){ x.finishedBy = x.assignedTo || ''; changed = true; }
+        }
+      });
+      (db.menage || []).forEach(x=>{
+        if (x.due !== undefined){ delete x.due; changed = true; }
+      });
+      if (changed) save();
+    }
+    migrateDueRemoval();
+
+    function load(){
+      try{ const cur = JSON.parse(localStorage.getItem(KEY)); if(cur) return cur; return seed(); }
+      catch(e){ return seed(); }
+    }
+    function save(){ localStorage.setItem(KEY, JSON.stringify(db)); }
+    function seed(){
+      const demo = JSON.parse(JSON.stringify(blank));
+      demo.emplacements = [
+        {id:nid('emp'), code:'A01', type:'MH', etat:'libre', capacite:4},
+        {id:nid('emp'), code:'A02', type:'MH', etat:'occupe', capacite:4},
+        {id:nid('emp'), code:'B05', type:'Bungalow', etat:'hors_service', capacite:6}
+      ];
+      demo.stock = [
+        {id:nid('stk'), ref:'AMP-10W', nom:'Ampoule 10W', categorie:'Élec', qte:8, seuil:5},
+        {id:nid('stk'), ref:'PRD-DET', nom:'Produit détergent', categorie:'Ménage', qte:2, seuil:5}
+      ];
+      demo.interventions = [
+        {id:nid('int'), titre:'Fuite robinet', empl:'A02', priorite:'haute', statut:'en_attente', createdAt: today(0)}
+      ];
+      demo.menage = [
+        {id:nid('men'), empl:'A02', checklist:'standard', statut:'a_faire', agent:'Lina'}
+      ];
+      localStorage.setItem(KEY, JSON.stringify(demo));
+      return demo;
+    }
+    function nid(p){ return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+    function today(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); return d.toISOString().slice(0,10); }
+
+    /* ===== Chat (localStorage) ===== */
+    const CHAT_KEY = 'camping_chat_v1';
+    const CHAT_CHANS = ['technique','menage',"reception"];
+
+    function loadChat(){
+      try{ return JSON.parse(localStorage.getItem(CHAT_KEY)) || []; }
+      catch{ return []; }
+    }
+    function saveChat(list){ localStorage.setItem(CHAT_KEY, JSON.stringify(list)); }
+
+    function fmtTime(ts){
+      const d=new Date(ts);
+      return d.toLocaleString(undefined,{ hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit' });
+    }
+
+    /*********** Navigation ***********/
+    $$('.tab').forEach(b=>b.addEventListener('click',()=>{
+      $$('.tab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      $$('main section').forEach(s=>s.style.display='none');
+      $('#'+b.dataset.tab).style.display='block';
+      renderAll();
+    }));
+
+    /*********** Helpers: responsive table labels ***********/
+    function applyTableLabels(tableId){
+      const table = document.getElementById(tableId);
+      if(!table) return;
+      const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      table.querySelectorAll('tbody tr').forEach(tr => {
+        Array.from(tr.children).forEach((td, i) => {
+          td.setAttribute('data-label', headers[i] || '');
+        });
+      });
+    }
+
+    /*********** Interventions ***********/
+    const fmtPrio = p => `<span class="prio ${p}">${p}</span>`;
+    const labelStatus = s => s==='en_attente' ? 'en attente' : (s==='en_cours' ? 'en cours' : (s==='termine' ? 'terminé' : s));
+    const fmtStatus = s => `<span class="status ${s}">${labelStatus(s)}</span>`;
+    const STATUSES = ['en_attente','en_cours','termine'];
+
+    function techList(){
+      return (users || []).filter(u => u.role === 'technique').map(u => u.user);
+    }
+    function fillTechSelect(){
+      const sel = $('#int_tech');
+      if(!sel) return;
+      const list = techList();
+      sel.innerHTML = `<option value="">(non assigné)</option>` +
+        list.map(u => `<option value="${u}" ${currentUser?.user===u?'selected':''}>${u}</option>`).join('');
+      if(currentUser?.role === 'technique' && list.includes(currentUser.user)){
+        sel.value = currentUser.user;
+      }
+    }
+
+    function renderInterv(){
+      const tb = $('#tblInterv tbody');
+      tb.innerHTML='';
+
+      let list = db.interventions.filter(x => x.statut !== 'termine');
+
+      const q = $('#int_filter').value?.toLowerCase().trim();
+      if(q){
+        list = list.filter(x=> (`${x.titre||''} ${x.empl||''}`).toLowerCase().includes(q));
+      }
+
+      list.forEach(x=>{
+        if(!STATUSES.includes(x.statut)){
+          if(['nouveau','attente'].includes(x.statut)) x.statut='en_attente';
+          else if(x.statut==='en_cours') x.statut='en_cours';
+          else x.statut='termine';
+        }
+        const tr=document.createElement('tr');
+        const techOptions = `<option value="">(non assigné)</option>` +
+          techList().map(u => `<option value="${u}" ${x.assignedTo===u?'selected':''}>${u}</option>`).join('');
+
+        tr.innerHTML = `
+          <td>${x.titre||''}</td>
+          <td>${x.empl||''}</td>
+          <td>
+            <select data-id="${x.id}" class="int_techsel" aria-label="Technicien">
+              ${techOptions}
+            </select>
+          </td>
+          <td>${fmtPrio(x.priorite||'normale')}</td>
+          <td>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              ${fmtStatus(x.statut)}
+              <select data-id="${x.id}" class="int_stat" aria-label="Statut de l'intervention">
+                ${STATUSES.map(s=> `<option value="${s}" ${x.statut===s?'selected':''}>${labelStatus(s)}</option>`).join('')}
+              </select>
+            </div>
+          </td>
+          <td style="white-space:nowrap"><button data-id="${x.id}" class="btn ghost del_int">Supprimer</button></td>
+        `;
+        tb.appendChild(tr);
+      });
+
+      $('#int_empty').hidden = list.length>0;
+
+      $$('.int_stat').forEach(sel=>sel.addEventListener('change',e=>{
+        const id=e.target.dataset.id;
+        const it=db.interventions.find(i=>i.id===id);
+        it.statut=e.target.value;
+        if(it.statut==='termine'){
+          if(!it.finishedAt) it.finishedAt = today(0);
+          if(!it.finishedBy){
+            it.finishedBy = it.assignedTo || (currentUser?.role==='technique' ? currentUser.user : '');
+          }
+        }
+        save(); renderAll(); toast('Statut mis à jour');
+      }));
+
+      $$('.del_int').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.id;
+        db.interventions=db.interventions.filter(i=>i.id!==id);
+        save(); renderAll(); toast('Intervention supprimée');
+      }));
+
+      $$('.int_techsel').forEach(sel=>sel.addEventListener('change', e=>{
+        const id = e.target.dataset.id;
+        const it = db.interventions.find(i=>i.id===id);
+        it.assignedTo = e.target.value;
+        if(it.statut==='termine' && !it.finishedBy){ it.finishedBy = it.assignedTo || it.finishedBy || ''; }
+        save(); renderAll(); toast('Technicien assigné');
+      }));
+
+      applyTableLabels('tblInterv');
+    }
+
+    // Ajouter une intervention
+    $('#int_add').onclick = ()=>{
+      const obj = {
+        id: nid('int'),
+        titre: $('#int_titre').value || '(Sans titre)',
+        empl: $('#int_emp').value || '',
+        priorite: $('#int_priorite').value,
+        statut: 'en_attente',
+        createdAt: today(0),
+        assignedTo: ($('#int_tech')?.value || (currentUser?.role==='technique' ? currentUser.user : ''))
+      };
+      db.interventions.unshift(obj);
+      save(); renderAll();
+      ['int_titre','int_emp'].forEach(id => $('#'+id).value = '');
+      $('#int_priorite').value = 'normale';
+      toast('Intervention ajoutée ✅');
+    };
+
+    $('#int_filter').addEventListener('input', renderInterv);
+
+    function renderIntervDone(){
+      const tb = $('#tblIntervDone tbody');
+      if(!tb) return;
+      tb.innerHTML = '';
+
+      const list = db.interventions
+        .filter(x => x.statut === 'termine')
+        .sort((a,b) => (b.finishedAt||'').localeCompare(a.finishedAt||'') || (b.createdAt||'').localeCompare(a.createdAt||''));
+
+      list.forEach(x=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${x.titre||''}</td>
+          <td>${x.empl||''}</td>
+          <td>${fmtPrio(x.priorite||'normale')}</td>
+          <td>${x.finishedAt || '—'}</td>
+          <td>${x.finishedBy || x.assignedTo || '—'}</td>
+        `;
+        tb.appendChild(tr);
+      });
+
+      $('#int_done_empty').hidden = list.length > 0;
+      applyTableLabels('tblIntervDone');
+    }
+
+    /********** Ménage ***********/
+    function renderMenage(){
+      const tb=$('#tblMen tbody'); tb.innerHTML='';
+      db.menage.forEach(x=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `
+          <td>${x.id}</td><td>${x.empl||''}</td><td>${x.checklist||''}</td>
+          <td>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="status ${x.statut}">${x.statut.replace('_',' ')}</span>
+              <select data-id="${x.id}" class="men_stat" aria-label="Statut de ménage">
+                ${['a_faire','en_cours','fait','controle'].map(s=> `<option ${x.statut===s?'selected':''}>${s}</option>`).join('')}
+              </select>
+            </div>
+          </td>
+          <td>${x.agent||''}</td>
+          <td style="white-space:nowrap"><button data-id="${x.id}" class="btn ghost del_men">Supprimer</button></td>
+        `;
+        tb.appendChild(tr);
+      });
+      $('#men_empty').hidden = db.menage.length>0;
+
+      $$('.men_stat').forEach(sel=>sel.addEventListener('change',e=>{
+        const it=db.menage.find(i=>i.id===e.target.dataset.id);
+        it.statut=e.target.value; save(); renderAll(); toast('Statut mis à jour');
+      }));
+      $$('.del_men').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.id;
+        db.menage=db.menage.filter(i=>i.id!==id); save(); renderAll(); toast('Tâche supprimée');
+      }));
+
+      applyTableLabels('tblMen');
+    }
+    $('#men_add').onclick = ()=>{
+      const obj={ id:nid('men'), empl:$('#men_emp').value||'', checklist:$('#men_check').value||'standard', statut:'a_faire', agent:$('#men_agent').value||'' };
+      db.menage.unshift(obj); save(); renderAll();
+      ['men_emp','men_agent'].forEach(id=>$('#'+id).value='');
+      toast('Tâche de ménage ajoutée ✅');
+    };
+
+    /*********** Emplacements ***********/
+    function renderEmp(){
+      const grid=$('#gridEmp'); grid.innerHTML='';
+      db.emplacements.forEach(x=>{
+        const d=document.createElement('div');
+        const cls=x.etat==='libre'?'ok':(x.etat==='occupe'?'warn':'bad');
+        d.className='card';
+        d.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span class="pill ${cls}">${x.etat}</span>
+            <span class="muted">Capacité ${x.capacite||'-'}</span>
+          </div>
+          <h3 style="margin:8px 0 4px;font-size:18px">${x.code||x.id}</h3>
+          <div class="muted" style="margin-bottom:8px">${x.type||'-'}</div>
+          <div class="toolbar" style="margin-top:12px">
+            <select data-id="${x.id}" class="emp_state" aria-label="État de l'emplacement"><option>libre</option><option>occupe</option><option>hors_service</option></select>
+            <button data-id="${x.id}" class="btn ghost del_emp">Supprimer</button>
+          </div>
+        `;
+        grid.appendChild(d);
+        d.querySelector('select').value=x.etat;
+      });
+
+      $$('.emp_state').forEach(sel=>sel.addEventListener('change',e=>{
+        const it=db.emplacements.find(i=>i.id===e.target.dataset.id);
+        it.etat=e.target.value; save(); renderAll();
+      }));
+      $$('.del_emp').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.id;
+        db.emplacements=db.emplacements.filter(i=>i.id!==id); save(); renderAll(); toast('Emplacement supprimé');
+      }));
+    }
+    $('#emp_add').onclick = ()=>{
+      const obj={ id:nid('emp'), code:$('#emp_code').value||'', type:$('#emp_type').value||'', etat:$('#emp_etat').value||'libre', capacite:Number($('#emp_cap').value||0) };
+      db.emplacements.push(obj); save(); renderAll();
+      ['emp_code','emp_type','emp_cap'].forEach(id=>$('#'+id).value=''); $('#emp_etat').value='libre';
+      toast('Emplacement ajouté ✅');
+    };
+
+    /*********** Stock ***********/
+    function renderStock(){
+      const tb=$('#tblStock tbody'); tb.innerHTML='';
+      db.stock.forEach(x=>{
+        const under = Number(x.qte||0) <= Number(x.seuil||0);
+        const tr=document.createElement('tr'); if(under) tr.classList.add('low');
+        tr.innerHTML =`
+          <td>${x.id}</td><td>${x.ref||''}</td><td>${x.nom||''}</td><td>${x.categorie||''}</td>
+          <td>${x.qte||0}</td><td>${x.seuil||0}</td>
+          <td>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <input type="number" id="q_${x.id}" placeholder="Qté" style="width:90px" />
+              <select id="t_${x.id}"><option>entree</option><option>sortie</option></select>
+              <button data-id="${x.id}" class="btn mv">OK</button>
+            </div>
+          </td>
+          <td><button data-id="${x.id}" class="btn ghost del_stk">X</button></td>
+        `;
+        tb.appendChild(tr);
+      });
+      $('#stk_empty').hidden = db.stock.length>0;
+
+      $$('.mv').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.id;
+        const q=Number($('#q_'+id).value||0);
+        const t=$('#t_'+id).value;
+        if(!q) return alert('Indiquez une quantité');
+        const it=db.stock.find(i=>i.id===id);
+        it.qte = (Number(it.qte)||0) + (t==='entree'?q:-q);
+        if(it.qte<0) it.qte=0;
+        save(); renderAll(); toast('Stock mis à jour');
+      }));
+      $$('.del_stk').forEach(btn=>btn.addEventListener('click',()=>{
+        const id=btn.dataset.id;
+        db.stock=db.stock.filter(i=>i.id!==id); save(); renderAll(); toast('Article supprimé');
+      }));
+
+      applyTableLabels('tblStock');
+    }
+    $('#stk_add').onclick = ()=>{
+      const obj={ id:nid('stk'), ref:$('#stk_ref').value||'', nom:$('#stk_nom').value||'', categorie:$('#stk_cat').value||'', qte:Number($('#stk_qty').value||0), seuil:Number($('#stk_min').value||0) };
+      db.stock.push(obj); save(); renderAll();
+      ['stk_ref','stk_nom','stk_cat','stk_qty','stk_min'].forEach(id=>$('#'+id).value='');
+      toast('Article ajouté ✅');
+    };
+
+    /*********** Comptes (admin) ***********/
+    function genPass(){
+      const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+      if(window.crypto?.getRandomValues){
+        return Array.from(crypto.getRandomValues(new Uint8Array(10))).map(x=>chars[x%chars.length]).join('');
+      }
+      return Array.from({length:10},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+    }
+    function renderComptes(){
+      const tb=$('#tblUsers tbody'); if(!tb) return;
+      tb.innerHTML='';
+      const isAdmin = currentUser?.role==='administration';
+      if(!isAdmin){ const sec=$('#comptes'); if(sec) sec.style.display='none'; return; }
+
+      users.forEach(u=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `
+          <td>${u.user}</td>
+          <td>
+            <select data-user="${u.user}" class="u_role" aria-label="Changer le rôle">
+              <option ${u.role==='administration'?'selected':''}>administration</option>
+              <option ${u.role==='reception'?'selected':''}>reception</option>
+              <option ${u.role==='technique'?'selected':''}>technique</option>
+              <option ${u.role==='menage'?'selected':''}>menage</option>
+            </select>
+          </td>
+          <td style="white-space:nowrap">
+            <button class="btn ghost u_reset" data-user="${u.user}">🔑 Réinitialiser MDP</button>
+            <button class="btn ghost u_del" data-user="${u.user}">🗑️ Supprimer</button>
+          </td>`;
+        tb.appendChild(tr);
+      });
+
+      $$('.u_role').forEach(sel=>sel.addEventListener('change',e=>{
+        const name=e.target.dataset.user;
+        const it=users.find(x=>x.user===name);
+        if(it.role==='administration' && e.target.value!=='administration'){
+          const admins = users.filter(x=>x.role==='administration').length;
+          if(admins<=1){
+            alert('Impossible de retirer le dernier administrateur.');
+            e.target.value='administration'; return;
+          }
+        }
+        it.role=e.target.value; saveUsers();
+        if(currentUser?.user===name){
+          currentUser.role=it.role; localStorage.setItem(CUR_USER_KEY, JSON.stringify(currentUser));
+        }
+        protectTabs(); toast('Rôle mis à jour');
+      }));
+
+      $$('.u_reset').forEach(btn=>btn.addEventListener('click',()=>{
+        const name=btn.dataset.user; const it=users.find(x=>x.user===name);
+        const np=genPass(); it.pass=md5(np); saveUsers(); toast('Nouveau MDP généré');
+        alert('Nouveau mot de passe pour '+name+':\n\n'+np+'\n\n(à communiquer et à changer ensuite)');
+      }));
+      $$('.u_del').forEach(btn=>btn.addEventListener('click',()=>{
+        const name=btn.dataset.user; const it=users.find(x=>x.user===name);
+        if(it.role==='administration'){
+          const admins = users.filter(x=>x.role==='administration').length;
+          if(admins<=1){ return alert('Impossible de supprimer le dernier administrateur.'); }
+        }
+        if(!confirm('Supprimer le compte '+name+' ?')) return;
+        users=users.filter(x=>x.user!==name); saveUsers();
+        if(currentUser?.user===name){ logout(); }
+        renderComptes(); toast('Compte supprimé');
+      }));
+
+      applyTableLabels('tblUsers');
+    }
+
+    /*********** Chat ***********/
+    function renderChat(){
+      const can = $('#chat'); if(!can) return;
+      const allowed = (currentUser?.role==='technique' || currentUser?.role==='menage'|| currentUser?.role==='reception');
+      const chatTab = document.querySelector('.tab[data-tab="chat"]');
+      if(chatTab) chatTab.style.display = allowed ? 'inline-flex' : 'none';
+
+      const chanSel = $('#chat_channel');
+      const info = $('#chat_info');
+      const box = $('#chat_messages');
+      const input = $('#chat_text');
+      const btn = $('#chat_send');
+
+      input.disabled = !allowed; btn.disabled = !allowed;
+      info.textContent = allowed
+        ? `Connecté: ${currentUser?.user || '—'} (${currentUser?.role})`
+        : `Lecture seule — réservé aux rôles Technique / Ménage`;
+
+      const chan = chanSel?.value || 'technique';
+      const data = loadChat().filter(m=>m.chan===chan).sort((a,b)=>a.ts-b.ts);
+
+      box.innerHTML = '';
+      data.forEach(m=>{
+        const wrap = document.createElement('div');
+        const isSelf = currentUser?.user && m.user===currentUser.user;
+        wrap.className = 'msg'+(isSelf?' self':'');
+        wrap.innerHTML = `
+          <div class="bubble ${m.chan}">
+            <div>${m.text}</div>
+            <div class="meta">
+              <span class="role-chip">${m.user || 'Anonyme'} · ${m.role}</span>
+              · ${fmtTime(m.ts)}
+            </div>
+          </div>
+        `;
+        box.appendChild(wrap);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendChat(){
+      const input = $('#chat_text');
+      const chan = $('#chat_channel').value;
+      const text = (input.value||'').trim();
+      const allowed = (currentUser?.role==='technique' || currentUser?.role==='menage'|| currentUser?.role==='reception');
+      if(!allowed) return alert('Chat réservé aux équipes Technique et Ménage.');
+      if(!text) return;
+      const msg = {
+        id: nid('msg'),
+        ts: Date.now(),
+        chan,
+        text,
+        user: currentUser?.user || 'Anonyme',
+        role: currentUser?.role || '—'
+      };
+      const list = loadChat(); list.push(msg); saveChat(list);
+      input.value=''; renderChat();
+      toast('Message envoyé');
+    }
+
+    // UI events du chat
+    document.addEventListener('click', e=>{
+      if(e.target && e.target.id==='chat_send') sendChat();
+    });
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Enter' && document.activeElement && document.activeElement.id==='chat_text'){
+        e.preventDefault(); sendChat();
+      }
+    });
+    document.getElementById('chat_channel')?.addEventListener('change', renderChat);
+
+    // Sync multi-onglets
+    window.addEventListener('storage', (e)=>{
+      if(e.key===CHAT_KEY) renderChat();
+    });
+
+    // Ajouter (admin)
+    document.addEventListener('click', (e)=>{
+      if(e.target && e.target.id==='acc_add'){
+        const u = $('#acc_user').value.trim();
+        const r = $('#acc_role').value;
+        let p = $('#acc_pwd').value;
+        if(!u) return alert('Identifiant requis');
+        if(!p){ p = genPass(); alert('Mot de passe généré pour '+u+':\n\n'+p); }
+        try{ register(u,r,p); $('#acc_user').value=''; $('#acc_pwd').value=''; renderComptes(); toast('Utilisateur créé ✅'); }
+        catch(err){ alert(err.message); }
+      }
+    });
+
+    /********** Tableau de bord ***********/
+    function renderDash(){
+      const kpi=$('#kpi'); kpi.innerHTML='';
+      const make=(t,v,percent)=>{const d=document.createElement('div'); d.className='card kpi';
+        d.innerHTML= `<div class="muted">${t}</div><div class="value">${v}</div>${percent!=null?`<div class="progress"><div class="bar" style="width:${percent}%"></div></div>`:''}`;
+        return d;
+      };
+
+      const todayStr = today(0);
+      const totalI   = db.interventions.length;
+      const doneI    = db.interventions.filter(x=>x.statut==='termine').length;
+
+      const createdToday = db.interventions.filter(x => (x.createdAt||'').slice(0,10) === todayStr).length;
+      const doneToday    = db.interventions.filter(x => (x.finishedAt||'') === todayStr).length;
+
+      const percentTotal = totalI     ? Math.round(100*doneI/totalI) : 0;
+      const percentToday = createdToday? Math.round(100*db.interventions.filter(x => (x.createdAt||'').slice(0,10) === todayStr && x.statut==='termine').length / createdToday) : 0;
+
+      kpi.appendChild(make("Interventions créées aujourd’hui", createdToday ? `${db.interventions.filter(x => (x.createdAt||'').slice(0,10) === todayStr && x.statut==='termine').length}/${createdToday}` : '—', percentToday));
+      kpi.appendChild(make("Total interventions", totalI ? `${doneI}/${totalI}` : '—', percentTotal));
+      kpi.appendChild(make("Interventions terminées aujourd’hui", doneToday));
+
+      const stockCrit = db.stock.filter(x=>Number(x.qte||0) <= Number(x.seuil||0)).length;
+      const libres    = db.emplacements.filter(x=>x.etat==='libre').length;
+
+      kpi.appendChild(make('Articles sous le seuil', stockCrit));
+      kpi.appendChild(make('Emplacements libres', libres));
+    }
+
+    /********** Exporter / Importer / Réinitialiser ***********/
+    $('#btnExport').onclick = ()=>{
+      const blob = new Blob([JSON.stringify(db,null,2)], {type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='camping-data.json'; a.click();
+      toast('Export prêt 💾');
+    };
+    $('#fileImport').onchange = (e)=>{
+      const f=e.target.files[0]; if(!f) return;
+      const r=new FileReader();
+      r.onload=()=>{
+        try{ db=JSON.parse(r.result); save(); renderAll(); toast('Import réussi ✅'); }
+        catch(err){ alert('Fichier invalide'); }
+      };
+      r.readAsText(f);
+    };
+    $('#btnReset').onclick = ()=>{
+      if(confirm('Tout effacer et remettre la démo ?')){
+        localStorage.removeItem(KEY);
+        db=seed(); renderAll(); toast('Réinitialisé');
+      }
+    };
+
+    /*********** UX raccourcis ***********/
+    ;['int_titre','int_emp'].forEach(id=> $('#'+id).addEventListener('keydown',e=>{ if(e.key==='Enter') $('#int_add').click(); }));
+    ;['men_emp','men_agent'].forEach(id=> $('#'+id).addEventListener('keydown',e=>{ if(e.key==='Enter') $('#men_add').click(); }));
+    ;['emp_code','emp_type','emp_cap'].forEach(id=> $('#'+id).addEventListener('keydown',e=>{ if(e.key==='Enter') $('#emp_add').click(); }));
+    ;['stk_ref','stk_nom','stk_cat','stk_qty','stk_min'].forEach(id=> $('#'+id).addEventListener('keydown',e=>{ if(e.key==='Enter') $('#stk_add').click(); }));
+
+    /*********** Render ***********/
+    function renderAll(){
+      fillTechSelect();
+      protectTabs();
+      renderInterv();
+      renderMenage();
+      renderEmp();
+      renderStock();
+      renderComptes();
+      renderDash();
+      renderChat();
+      refreshUserUI();
+      renderIntervDone();
+    }
+
+    // Démarrage : portail si non connecté
+    showGate(!currentUser);
+    if(currentUser){ refreshUserUI(); protectTabs(); renderAll(); }
+  </script>
 </body>
 </html>

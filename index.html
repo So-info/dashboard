@@ -1,11 +1,80 @@
 <!doctype html>
 <html lang="fr">
 <head>
+  <meta name="theme-color" content="#0f131b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Dashboard — Camping La Plage (Argelès-sur-Mer)</title>
   <link rel="icon" href="logo-camping-la-plage.png">
   <style>
+    /* === Mobile Fullscreen Layout (cards = pages) === */
+:root{
+  /* --vh et --head sont fixés en JS selon l’écran réel (iOS/Android) */
+  --vh: 100svh;           /* hauteur viewport fiable */
+  --head: 0px;            /* hauteur du header calculée */
+  --main-pad-y: 18px;     /* padding vertical de <main> (mobile: 12px) */
+}
+
+/* Les sections "page" remplissent l'écran et organisent leur contenu en colonne */
+.card.page{
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--vh) - var(--head) - var(--main-pad-y) * 2);
+  /* Évite que le contenu déborde quand clavier iOS apparaît */
+  min-height: max(420px, calc(var(--vh) - var(--head) - var(--main-pad-y) * 2));
+}
+
+/* Barres d’outils fixées en haut de la carte */
+.card.page > .toolbar{
+  flex: 0 0 auto;
+}
+
+/* Tables & listes scrollables, sans étirer la page */
+.card.page table,
+.card.page .chat-box,
+.card.page #gridEmp,
+.card.page #kpi{
+  flex: 1 1 auto;
+  min-height: 0;                 /* crucial pour que le flex autorise le scroll interne */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Améliore l’expérience des tables sur mobile */
+@media (max-width: 760px){
+  :root{ --main-pad-y: 12px; }
+  .card.page{
+    border-radius: 12px;
+    padding: 12px;
+  }
+  /* Quand la table passe en cartes empilées, on permet le scroll de l’ensemble tbody */
+  .card.page table, .card.page tbody{
+    display: block;
+  }
+  .card.page tbody{
+    overflow: auto;
+    max-height: none; /* pas de "coupe" : c'est le conteneur .card.page qui gère la hauteur */
+  }
+}
+
+/* Chat : laisse la boîte occuper l’espace disponible */
+.card.page #chat_messages.chat-box{
+  height: auto;
+}
+
+/* Boutons / inputs : touch targets confortables partout */
+button, .btn, input, select, textarea{
+  min-height: 48px;
+}
+
+/* En cas de clavier ouvert (iOS/Android), évite les sauts visuels */
+html.body-locked, body.body-locked{ overscroll-behavior: contain; }
+
+/* Petits raffinements de scroll */
+.card.page *{ scroll-margin-top: 12px; }
+
     /* ===== Thème & variables ===== */
     :root{
       --bg: #f6f7fb;
@@ -61,7 +130,7 @@
       *{ animation:none!important; transition:none!important; scroll-behavior:auto!important; }
     }
 
-    /* ===== Header ===== */
+    /*
     header{
       position:sticky;top:0;background:rgba(255,255,255,.7);
       backdrop-filter:saturate(140%) blur(8px);
@@ -78,7 +147,7 @@
     .tab.active{background:var(--primary);color:#fff;border-color:transparent}
     .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .theme-toggle{border:1px solid var(--bd);background:var(--bg-elev);border-radius:10px;padding:8px 12px;cursor:pointer;min-height:44px}
-
+*/
     /* ===== Layout ===== */
     main{padding:18px;max-width:1200px;margin:0 auto}
     h2{margin:0 0 8px 0;font-size:18px}
@@ -234,7 +303,273 @@ border:1px solid var(--bd);background:rgba(255,255,255,.6)}
       .grid{ grid-template-columns: 1fr; }
       .card{ padding:14px; }
     }
-  </style>
+
+    /* ===== Header mobile-first ===== */
+.app-header{
+  position: sticky; top: 0; z-index: 20;
+  padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
+  background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--bd);
+  display: grid; align-items: center; gap: 10px;
+  grid-template-columns: 1fr auto; /* brand | actions/hamburger */
+}
+
+/* bloc marque */
+.brand-wrap{display:flex; align-items:center; gap:8px; text-decoration:none; color:inherit; min-height:44px}
+.brand{height:28px; width:auto; object-fit:contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,.12))}
+.brand-title{font-weight:700; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* nav desktop horizontal (caché sur mobile) */
+.nav-inline{display:none; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; scroll-snap-type:x proximity;}
+.nav-inline::-webkit-scrollbar{display:none}
+
+/* bouton hamburger */
+.menu-toggle{
+  border:1px solid var(--bd); background:var(--bg-elev); border-radius:10px;
+  padding:8px 12px; min-height:44px; min-width:44px; cursor:pointer;
+}
+
+/* actions à droite : masquées sur mobile (on garde les actions clés dans le panneau mobile) */
+.app-header .right{ display:none }
+.nav-title{font-weight:800; font-size:18px}
+.menu-close{
+  border:1px solid var(--bd); background:var(--bg-elev); border-radius:10px;
+  padding:8px 12px; min-height:44px; min-width:44px; cursor:pointer;
+}
+.nav-list{
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0 14px;
+}
+.nav-list .tab{
+  min-height: 56px;        /* gros touch target */
+  font-size: 18px;          /* plus lisible */
+  line-height: 1.3;
+  letter-spacing: .1px;
+}
+.nav-list .tab:active{
+  transform: scale(.995);
+}
+.nav-panel-head{
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--bd);
+}
+.nav-actions{
+  padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+  border-top: 1px dashed var(--bd);
+  background: var(--bg-elev);
+}
+
+.nav-safe{ height: env(safe-area-inset-bottom); }
+
+/* ===== États/focus ===== */
+.tab, .btn, .menu-toggle, .menu-close{
+  touch-action: manipulation;
+}
+.tab:focus-visible, .btn:focus-visible, .menu-toggle:focus-visible, .menu-close:focus-visible{
+  outline: 3px solid color-mix(in oklab, var(--accent) 60%, white 0%);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+html.body-locked, body.body-locked{
+  height: 100%;
+  overflow: hidden !important;
+}
+
+/* ===== Desktop (≥ 760px) ===== */
+@media (min-width: 760px){
+  .app-header{
+    grid-template-columns: auto 1fr auto; /* brand | nav | actions */
+    padding: 10px 16px;
+  }
+  .menu-toggle{ display:none; }
+  .nav-inline{ display:flex; }
+  .app-header .right{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-left:auto; }
+}
+
+/* Thème dark transparence */
+@media (prefers-color-scheme: dark){
+  .app-header{ background: rgba(15,19,27,.6); }
+  .nav-panel{ background: rgba(15,19,27,.85); }
+}
+
+/* Réduction des animations si demandé */
+@media (prefers-reduced-motion: reduce){
+  .nav-panel, .nav-panel-inner{ transition: none !important; }
+}
+
+/* Tête */
+.nav-panel-head{
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--bd);
+  background: color-mix(in oklab, var(--bg-elev) 92%, black 0%);
+}
+
+/* Profil */
+.nav-profile{
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px dashed var(--bd);
+}
+.nav-profile .avatar{
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 800;
+  border: 1px solid var(--bd);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 25%, transparent), color-mix(in srgb, var(--accent) 25%, transparent));
+}
+.nav-profile .who .name{ font-weight: 700; }
+.nav-profile .who .role{ font-size: 12px; color: var(--muted); }
+
+/* Recherche */
+.nav-search{ padding: 10px 14px 4px; border-bottom: 1px dashed var(--bd); }
+.nav-search input{
+  width: 100%; border-radius: 999px; padding: 10px 14px;
+}
+
+/* Titre de section */
+.nav-section{
+  padding: 10px 14px 6px;
+  font-size: 12px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+/* Liste : grosses cibles tactiles + hover */
+.nav-list{ padding: 6px 8px 14px; gap: 6px; display: flex; flex-direction: column; }
+.nav-list .tab{
+  justify-content: flex-start;
+  width: 100%; border-radius: 14px;
+  padding: 14px 14px; min-height: 56px; font-size: 17px;
+  border: 1px solid var(--bd);
+  background: var(--bg-elev);
+  transition: transform .06s ease, background .15s ease, border-color .15s ease;
+}
+.nav-list .tab:active{ transform: scale(.995); }
+.nav-list .tab.active{
+  background: color-mix(in srgb, var(--primary) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--bd));
+}
+
+/* Actions rapides */
+.nav-actions{
+  padding: 8px 12px 12px;
+  border-top: 1px dashed var(--bd);
+  background: color-mix(in oklab, var(--bg-elev) 96%, black 0%);
+}
+
+/* Bouton hamburger/close : petite élévation au touch */
+.menu-toggle:active, .menu-close:active{ transform: translateY(1px); }
+
+@media (prefers-color-scheme: dark){
+  .nav-panel{ background: rgba(0,0,0,.35); }
+}
+
+/* Réduction des animations si demandé */
+@media (prefers-reduced-motion: reduce){
+  .nav-panel, .nav-panel-inner{ transition: none !important; }
+}
+
+.nav-panel{
+  position: fixed; inset: 0;
+  /* CHANGEMENTS ↓ */
+  height: 100dvh;                 /* plein écran fiable mobile */
+  z-index: 1000;
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s ease;
+  background: rgba(0,0,0,.35);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.nav-panel.is-open{ opacity: 1; pointer-events: auto; }
+
+
+/* Feuille latérale */
+.nav-panel-inner{
+  position: absolute; top: 0; right: 0; bottom: 0;
+  /* CHANGEMENTS ↓ */
+  width: min(100svw, 420px);      /* 100% sur petits écrans, max 420px */
+  max-width: 100svw;
+  height: 100dvh;                 /* colle au bord bas malgré la barre d’URL */
+  background: var(--bg-elev);
+  border-left: 1px solid var(--bd);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  display: flex; flex-direction: column;
+  overflow: hidden;               /* évite un 2e scroll parasite */
+  transform: translateX(100%);
+  transition: transform .28s ease;
+  will-change: transform;
+}
+.nav-panel.is-open .nav-panel-inner{ transform: translateX(0); }
+
+
+/* Tête : seulement Titre + Fermer, toujours visible */
+.nav-panel-head{
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--bd);
+}
+
+/* Blocs contenus (profil / recherche / liste / actions) */
+.nav-profile{ display:flex; align-items:center; gap:12px; padding:12px 14px; border-bottom:1px dashed var(--bd); background:var(--bg-elev); }
+.nav-profile .avatar{
+  width:44px; height:44px; border-radius:50%; display:grid; place-items:center; font-weight:800;
+  border:1px solid var(--bd);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--primary) 25%, transparent),
+    color-mix(in srgb, var(--accent) 25%, transparent));
+}
+.nav-profile .who .name{ font-weight:700; }
+.nav-profile .who .role{ font-size:12px; color:var(--muted); }
+
+.nav-search{ padding:10px 14px 4px; border-bottom:1px dashed var(--bd); background:var(--bg-elev); }
+.nav-search input{ width:100%; border-radius:999px; padding:10px 14px; }
+
+.nav-section{ padding: 10px 14px 6px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; background:var(--bg-elev); }
+
+/* La liste prend toute la hauteur dispo et scrolle */
+.nav-list{
+  /* CHANGEMENTS ↓ */
+  flex: 1 1 auto;
+  min-height: 0;                  /* crucial en flex pour autoriser le scroll */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 8px 14px;
+  background: var(--bg-elev);
+}
+
+.nav-list .tab{
+  justify-content:flex-start; width:100%;
+  min-height:56px; font-size:17px; line-height:1.3; letter-spacing:.1px;
+  border:1px solid var(--bd); border-radius:14px; padding:14px 14px; background:var(--bg-elev);
+  transition: transform .06s ease, background .15s ease, border-color .15s ease;
+}
+.nav-list .tab:active{ transform: scale(.995); }
+.nav-list .tab.active{
+  background: color-mix(in srgb, var(--primary) 12%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--bd));
+}
+
+.nav-actions{
+  padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+  border-top: 1px dashed var(--bd);
+  background: var(--bg-elev);
+}
+
+/* Boutons tactile */
+.menu-toggle:active, .menu-close:active{ transform: translateY(1px); }
+
+/* Accessibilité / préférence */
+@media (prefers-reduced-motion: reduce){
+  .nav-panel, .nav-panel-inner{ transition: none !important; }
+}
+
+</style>
 </head>
 <body>
 <!-- ===== Gate (connexion avant application) ===== -->
@@ -289,28 +624,85 @@ box?.animate(
 </script>
   <!-- ===== App ===== -->
   <div id="appRoot" style="display:none">
-    <header>
-      <h1><img class="brand" src="logo-camping-la-plage.png" alt="Camping La Plage"> <span>Tableau de bord – La Plage</span></h1>
-      <nav aria-label="Navigation principale">
-        <button class="tab" data-tab="dashboard">📊 <span>Tableau de bord</span></button>
-        <button class="tab active" data-tab="interventions">🛠️ <span>Interventions</span></button>
-        <button class="tab" data-tab="menage">🧹 <span>Ménage</span></button>
-        <button class="tab" data-tab="emplacements">📍 <span>Emplacements</span></button>
-        <button class="tab" data-tab="stock">📦 <span>Stock</span></button>
+<header class="app-header">
+  <a class="brand-wrap" href="#" aria-label="Accueil – Camping La Plage">
+    <img class="brand" src="logo-camping-la-plage.png" alt="Camping La Plage">
+    <span class="brand-title">Tableau de bord – La Plage</span>
+  </a>
 
-        <button class="tab" data-tab="comptes">👥 <span>Comptes</span></button>
-        <button class="tab" data-tab="chat">💬 <span>Chat</span></button>
-      </nav>
-      <div class="right">
-        <span id="userBadge" class="badge" hidden>👤 <span id="userName"></span> · <span class="role" id="userRole"></span></span>
-        <button id="btnLogout" class="btn">🚪 Se déconnecter</button>
-        <button id="btnExport" class="btn">💾 Exporter</button>
-        <label class="btn" for="fileImport">📥 Importer</label>
-        <input id="fileImport" type="file" accept="application/json" style="display:none" />
-        <button id="btnReset" class="btn danger">🗑️ Remise à zéro</button>
-        <button id="theme" class="theme-toggle" title="Basculer le thème">🌓</button>
+  <!-- Bouton hamburger (mobile) -->
+  <button id="menuToggle"
+          class="menu-toggle"
+          aria-label="Ouvrir le menu"
+          aria-controls="navPanel"
+          aria-expanded="false">
+    ☰
+  </button>
+
+  <!-- Navigation horizontale (desktop) -->
+  <nav class="nav-inline" aria-label="Navigation principale">
+    <button class="tab" data-tab="dashboard">📊 <span>Tableau de bord</span></button>
+    <button class="tab active" data-tab="interventions">🛠️ <span>Interventions</span></button>
+    <button class="tab" data-tab="menage">🧹 <span>Ménage</span></button>
+    <button class="tab" data-tab="emplacements">📍 <span>Emplacements</span></button>
+    <button class="tab" data-tab="stock">📦 <span>Stock</span></button>
+    <button class="tab" data-tab="comptes">👥 <span>Comptes</span></button>
+    <button class="tab" data-tab="chat">💬 <span>Chat</span></button>
+  </nav>
+
+  <!-- Zone actions à droite -->
+  <div class="right">
+    <span id="userBadge" class="badge" hidden>👤 <span id="userName"></span> · <span class="role" id="userRole"></span></span>
+    <button id="btnLogout" class="btn">🚪 Se déconnecter</button>
+    <button id="btnExport" class="btn">💾 Exporter</button>
+    <label class="btn" for="fileImport">📥 Importer</label>
+    <input id="fileImport" type="file" accept="application/json" style="display:none" />
+    <button id="btnReset" class="btn danger">🗑️ Remise à zéro</button>
+    <button id="theme" class="theme-toggle" title="Basculer le thème">🌓</button>
+  </div>
+
+<div id="navPanel" class="nav-panel" role="dialog" aria-modal="true" aria-labelledby="navTitle" hidden>
+  <div class="nav-panel-inner">
+    <div class="nav-panel-head">
+      <span class="nav-title" id="navTitle">Menu</span>
+      <button id="menuClose" class="menu-close" aria-label="Fermer le menu">✕</button>
+    </div>
+
+    <div class="nav-profile" aria-live="polite">
+      <div class="avatar" id="m_avatar" aria-hidden="true"></div>
+      <div class="who">
+        <div class="name" id="m_name">Invité</div>
+        <div class="role" id="m_role">—</div>
       </div>
-    </header>
+    </div>
+
+    <div class="nav-search">
+      <input id="navSearch" placeholder="Rechercher un menu…" aria-label="Rechercher dans le menu" />
+    </div>
+
+    <div class="nav-section">Navigation</div>
+
+    <nav class="nav-list" aria-label="Navigation principale (mobile)">
+      <button class="tab" data-tab="dashboard">📊 Tableau de bord</button>
+      <button class="tab active" data-tab="interventions">🛠️ Interventions</button>
+      <button class="tab" data-tab="menage">🧹 Ménage</button>
+      <button class="tab" data-tab="emplacements">📍 Emplacements</button>
+      <button class="tab" data-tab="stock">📦 Stock</button>
+      <button class="tab" data-tab="comptes">👥 Comptes</button>
+      <button class="tab" data-tab="chat">💬 Chat</button>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="m_logout" class="btn">🚪 Se déconnecter</button>
+      <button id="m_theme" class="btn">🌓 Thème</button>
+    </div>
+
+    <div class="nav-safe" aria-hidden="true"></div>
+  </div>
+</div>
+
+</header>
+
 
     <main>
       <!-- Interventions -->
@@ -693,13 +1085,20 @@ function showGate(show){
     }
 
     /*********** Navigation ***********/
-    $$('.tab').forEach(b=>b.addEventListener('click',()=>{
-      $$('.tab').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      $$('main section').forEach(s=>s.style.display='none');
-      $('#'+b.dataset.tab).style.display='block';
-      renderAll();
-    }));
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('.tab');
+  if(!b || !b.dataset.tab) return;
+
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+
+  document.querySelectorAll('main section').forEach(s=> s.style.display='none');
+  const target = document.getElementById(b.dataset.tab);
+  if(target) target.style.display='block';
+
+  renderAll();
+});
+
 
     /*********** Helpers: responsive table labels ***********/
     function applyTableLabels(tableId){
@@ -1212,6 +1611,478 @@ function showGate(show){
     // Démarrage : portail si non connecté
     showGate(!currentUser);
     if(currentUser){ refreshUserUI(); protectTabs(); renderAll(); }
-  </script>
+
+(function(){
+  const panel = document.getElementById('navPanel');
+  const inner = panel.querySelector('.nav-panel-inner');
+  const btnOpen = document.getElementById('menuToggle');
+  const btnClose = document.getElementById('menuClose');
+
+  let scrollY = 0;
+
+  function getFocusable(container){
+    return Array.from(container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )).filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+  }
+
+  function lockScroll(){
+    scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.documentElement.classList.add('body-locked');
+    document.body.classList.add('body-locked');
+    // Pour iOS/Android, on "fige" la position
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+  function unlockScroll(){
+    document.documentElement.classList.remove('body-locked');
+    document.body.classList.remove('body-locked');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollY);
+  }
+
+  // Synchronise l’onglet actif entre desktop et mobile
+  function syncActive(){
+    const id = document.querySelector('.tab.active')?.dataset.tab;
+    if(!id) return;
+    document.querySelectorAll('#navPanel .tab').forEach(b=>{
+      b.classList.toggle('active', b.dataset.tab===id);
+    });
+    document.querySelectorAll('.nav-inline .tab').forEach(b=>{
+      b.classList.toggle('active', b.dataset.tab===id);
+    });
+  }
+
+  function openPanel(){
+    syncActive();
+    panel.hidden = false;
+    btnOpen.setAttribute('aria-expanded','true');
+    lockScroll();
+
+    const focusables = getFocusable(panel);
+    (focusables[0] || btnClose || panel).focus();
+
+    panel.addEventListener('keydown', onKeyTrap);
+    document.addEventListener('keydown', onEsc);
+    document.addEventListener('click', onBackdrop, true);
+  }
+
+  function closePanel(){
+    panel.hidden = true;
+    btnOpen.setAttribute('aria-expanded','false');
+    unlockScroll();
+
+    panel.removeEventListener('keydown', onKeyTrap);
+    document.removeEventListener('keydown', onEsc);
+    document.removeEventListener('click', onBackdrop, true);
+
+    // Retour focus sur le bouton
+    btnOpen?.focus();
+  }
+
+  function onEsc(e){
+    if(e.key === 'Escape') closePanel();
+  }
+
+  // Focus trap dans le panneau (Tab / Shift+Tab)
+  function onKeyTrap(e){
+    if(e.key !== 'Tab') return;
+    const focusables = getFocusable(panel);
+    if(focusables.length === 0) return;
+    const first = focusables[0];
+    const last  = focusables[focusables.length - 1];
+
+    if(e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if(!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
+  }
+
+  // Fermer si clic en dehors du “inner”
+  function onBackdrop(e){
+    if(!panel.hidden && e.target === panel){
+      closePanel();
+    }
+  }
+
+  // Ouvrir/fermer
+  btnOpen?.addEventListener('click', ()=> panel.hidden ? openPanel() : closePanel());
+  btnClose?.addEventListener('click', closePanel);
+
+  // Cliquer un onglet du panneau => sélection + fermer
+  panel.addEventListener('click', (e)=>{
+    const b = e.target.closest('.tab');
+    if(!b || !b.dataset.tab) return;
+    // Déclenche la logique onglets existante (écouteur global .tab)
+    const twin = document.querySelector(`.nav-inline .tab[data-tab="${b.dataset.tab}"]`) || b;
+    twin.click();
+    syncActive();
+    closePanel();
+  });
+
+  // Synchroniser si l’utilisateur clique une tab desktop
+  document.addEventListener('click', (e)=>{
+    const b = e.target.closest('.nav-inline .tab');
+    if(b) setTimeout(syncActive, 0);
+  });
+})();
+/* === Viewport Vars (iOS/Android safe) & marquage des sections comme "page" === */
+(function mobileFullscreenInit(){
+  // 1) Marque toutes les sections principales comme "page" => elles adoptent la hauteur plein écran
+  document.querySelectorAll('main > section.card').forEach(sec => sec.classList.add('page'));
+
+  // 2) Calcule --vh (hauteur utile) et --head (hauteur du header) de manière fiable
+  const docEl = document.documentElement;
+  const headerEl = document.querySelector('.app-header');
+
+  function setViewportVars(){
+    // Hauteur visible réelle (visualViewport gère mieux le clavier mobile)
+    const vh = (window.visualViewport?.height || window.innerHeight);
+    const head = headerEl?.offsetHeight || 0;
+
+    docEl.style.setProperty('--vh', vh + 'px');
+    docEl.style.setProperty('--head', head + 'px');
+  }
+
+  // 3) Écouteurs (orientation, resize, clavier, zoom…)
+  setViewportVars();
+  window.addEventListener('resize', setViewportVars, { passive: true });
+  window.addEventListener('orientationchange', setViewportVars, { passive: true });
+  if (window.visualViewport){
+    visualViewport.addEventListener('resize', setViewportVars, { passive: true });
+    visualViewport.addEventListener('scroll', setViewportVars, { passive: true });
+  }
+
+  // 4) Sécurité : réapplique après ouverture/fermeture du menu mobile ou du gate
+  const rerender = ()=> setTimeout(setViewportVars, 0);
+  document.getElementById('menuToggle')?.addEventListener('click', rerender);
+  document.getElementById('menuClose')?.addEventListener('click', rerender);
+  // Quand le "gate" s’ouvre/se ferme via showGate(), on recalcule aussi
+  const _showGate = window.showGate;
+  if (typeof _showGate === 'function'){
+    window.showGate = function(show){
+      _showGate(show);
+      requestAnimationFrame(setViewportVars);
+    };
+  }
+})();
+// Colle ce bloc APRÈS ton script existant, ou importe-le après la page.
+// Il ajoute :
+// 1) Onglets ARIA (accessibilité) + synchronisation des états
+// 2) type="button" par défaut sur tous les <button>
+// 3) scope="col" sur tous les <th>
+// 4) Rendu SÉCURISÉ (sans innerHTML) des listes Interventions (+ Done)
+//    -> modèle que tu peux copier pour les autres tables
+
+(function(){
+  'use strict';
+
+  /* ------------------ Utilitaires DOM sûrs ------------------ */
+  const el = (tag, attrs = {}, children = []) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)){
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k === 'dataset') Object.assign(e.dataset, v);
+      else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v);
+    }
+    for (const c of [].concat(children)){
+      if (c == null) continue;
+      e.appendChild(c.nodeType ? c : document.createTextNode(String(c)));
+    }
+    return e;
+  };
+
+  // Force un type explicite sur tous les boutons pour éviter les soumissions implicites
+  document.querySelectorAll('button:not([type])').forEach(b => b.type = 'button');
+
+  // Ajoute scope="col" aux têtes de colonnes
+  document.querySelectorAll('thead th').forEach(th => th.setAttribute('scope','col'));
+
+  /* ------------------ Onglets ARIA ------------------ */
+  function initAriaTabs(){
+    const lists = [
+      document.querySelector('.nav-inline'),
+      document.querySelector('#navPanel .nav-list')
+    ].filter(Boolean);
+
+    lists.forEach(list => {
+      list.setAttribute('role','tablist');
+      list.querySelectorAll('.tab').forEach(btn => {
+        const target = btn.dataset.tab;
+        if (!target) return;
+        btn.setAttribute('role','tab');
+        btn.setAttribute('aria-controls', target);
+        btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+      });
+    });
+
+    document.querySelectorAll('main > section').forEach((sec) => {
+      const id = sec.id || '';
+      sec.setAttribute('role','tabpanel');
+      sec.setAttribute('tabindex','0');
+      // Aligne hidden avec l'état de display
+      const hidden = sec.style.display === 'none';
+      sec.hidden = hidden;
+    });
+  }
+
+  function setActiveTab(targetId){
+    if(!targetId) return;
+    // Maj des onglets
+    document.querySelectorAll('[role="tab"]').forEach(t => {
+      const is = t.getAttribute('aria-controls') === targetId && t.offsetParent !== null; // instance visible
+      t.setAttribute('aria-selected', is ? 'true' : 'false');
+      t.classList.toggle('active', is);
+    });
+    // Maj des panneaux
+    document.querySelectorAll('main > section[role="tabpanel"]').forEach(sec => {
+      const show = sec.id === targetId;
+      sec.hidden = !show;
+      sec.style.display = show ? 'block' : 'none';
+    });
+  }
+
+  // Intercepte les clics après le gestionnaire existant pour maintenir ARIA en phase
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.tab');
+    if(!b || !b.dataset.tab) return;
+    queueMicrotask(() => setActiveTab(b.dataset.tab));
+  });
+
+  initAriaTabs();
+
+  /* ------------------ Rendu SAFE : Interventions ------------------ */
+  // On remplace la fonction globale renderInterv par une version sans innerHTML
+  if (typeof window.renderInterv === 'function'){
+    const labelStatus = window.labelStatus || ((s)=>s);
+    const STATUSES = window.STATUSES || ['en_attente','en_cours','termine'];
+    const techList  = window.techList  || (()=>[]);
+    const applyTableLabels = window.applyTableLabels || (()=>{});
+    const save = window.save || (()=>{});
+    const toast = window.toast || (()=>{});
+
+    window.renderInterv = function renderIntervSafe(){
+      const db = window.db || { interventions: [] };
+      const currentUser = window.currentUser;
+
+      const tb = document.querySelector('#tblInterv tbody');
+      if(!tb) return;
+      tb.textContent = '';
+
+      let list = (db.interventions || []).filter(x => x.statut !== 'termine');
+      const qin = document.getElementById('int_filter');
+      const q = qin?.value?.toLowerCase()?.trim();
+      if(q) list = list.filter(x => (`${x.titre||''} ${x.empl||''}`).toLowerCase().includes(q));
+
+      const STAT_SET = new Set(STATUSES);
+
+      list.forEach(x => {
+        if(!STAT_SET.has(x.statut)){
+          if(['nouveau','attente'].includes(x.statut)) x.statut = 'en_attente';
+          else if(x.statut === 'en_cours') x.statut = 'en_cours';
+          else x.statut = 'termine';
+        }
+
+        const tr = el('tr');
+
+        // Titre
+        tr.appendChild(el('td', { text: x.titre || '' }));
+        // Emplacement
+        tr.appendChild(el('td', { text: x.empl || '' }));
+
+        // Technicien (select)
+        const techSel = el('select', { 'aria-label':'Technicien', class:'int_techsel' , dataset:{ id: x.id } });
+        techSel.appendChild(el('option', { value:'', text:'(non assigné)'}));
+        techList().forEach(u => techSel.appendChild(el('option', { value:u, text:u })));
+        techSel.value = x.assignedTo || '';
+        tr.appendChild(el('td', {}, techSel));
+
+        // Priorité (badge)
+        tr.appendChild(el('td', {}, el('span', { class: 'prio ' + (x.priorite||'normale'), text: (x.priorite||'normale') })));
+
+        // Statut (pill + select)
+        const statWrap = el('div', { class: 'flex-wrap', style:'display:flex;gap:8px;align-items:center;flex-wrap:wrap' });
+        const statPill = el('span', { class: 'status ' + x.statut, text: labelStatus(x.statut) });
+        const statSel  = el('select', { class:'int_stat', 'aria-label':'Statut de l\'intervention', dataset:{ id: x.id } });
+        STATUSES.forEach(s => statSel.appendChild(el('option', { value:s, text: labelStatus(s) })));
+        statSel.value = x.statut;
+        statWrap.appendChild(statPill);
+        statWrap.appendChild(statSel);
+        tr.appendChild(el('td', {}, statWrap));
+
+        // Actions
+        const del = el('button', { class:'btn ghost del_int', text:'Supprimer', dataset:{ id: x.id } });
+        const actions = el('td', { style:'white-space:nowrap' }, del);
+        tr.appendChild(actions);
+
+        tb.appendChild(tr);
+      });
+
+      const empty = document.getElementById('int_empty');
+      if(empty) empty.hidden = list.length > 0;
+
+      // Events (délégation locale sur tb)
+      tb.addEventListener('change', function onChange(e){
+        const target = e.target;
+        if (target.matches('.int_stat')){
+          const id = target.dataset.id;
+          const it = (window.db.interventions || []).find(i=>i.id===id);
+          if(!it) return;
+          it.statut = target.value;
+          if(it.statut === 'termine'){
+            if(!it.finishedAt) it.finishedAt = (window.today? window.today(0) : new Date().toISOString().slice(0,10));
+            if(!it.finishedBy){
+              it.finishedBy = it.assignedTo || (window.currentUser?.role==='technique' ? window.currentUser.user : '');
+            }
+          }
+          save();
+          // Met à jour le pill visuel sans re-render complet
+          const pill = target.parentElement?.querySelector('.status');
+          if(pill){
+            pill.className = 'status ' + it.statut;
+            pill.textContent = labelStatus(it.statut);
+          }
+          toast && toast('Statut mis à jour');
+          // Recalcule labels responsives
+          applyTableLabels('tblInterv');
+        }
+        if (target.matches('.int_techsel')){
+          const id = target.dataset.id;
+          const it = (window.db.interventions || []).find(i=>i.id===id);
+          if(!it) return;
+          it.assignedTo = target.value;
+          if(it.statut==='termine' && !it.finishedBy){ it.finishedBy = it.assignedTo || it.finishedBy || ''; }
+          save();
+          toast && toast('Technicien assigné');
+        }
+      }, { once: true });
+
+      // Délégation delete
+      tb.addEventListener('click', function onClick(e){
+        const btn = e.target.closest('.del_int');
+        if(!btn) return;
+        const id = btn.dataset.id;
+        window.db.interventions = (window.db.interventions || []).filter(i=>i.id!==id);
+        save();
+        (window.renderAll || function(){})();
+        toast && toast('Intervention supprimée');
+      }, { once: true });
+
+      applyTableLabels('tblInterv');
+    };
+  }
+
+  /* ------------------ Rendu SAFE : Interventions terminées ------------------ */
+  if (typeof window.renderIntervDone === 'function'){
+    window.renderIntervDone = function renderIntervDoneSafe(){
+      const db = window.db || { interventions: [] };
+      const tb = document.querySelector('#tblIntervDone tbody');
+      if(!tb) return;
+      tb.textContent = '';
+
+      const list = (db.interventions || [])
+        .filter(x => x.statut === 'termine')
+        .sort((a,b) => (b.finishedAt||'').localeCompare(a.finishedAt||'') || (b.createdAt||'').localeCompare(a.createdAt||''));
+
+      list.forEach(x => {
+        const tr = el('tr');
+        tr.appendChild(el('td', { text: x.titre || '' }));
+        tr.appendChild(el('td', { text: x.empl || '' }));
+        tr.appendChild(el('td', {}, el('span', { class: 'prio ' + (x.priorite||'normale'), text: (x.priorite||'normale') })));
+        tr.appendChild(el('td', { text: x.finishedAt || '—' }));
+        tr.appendChild(el('td', { text: x.finishedBy || x.assignedTo || '—' }));
+        tb.appendChild(tr);
+      });
+
+      const empty = document.getElementById('int_done_empty');
+      if(empty) empty.hidden = list.length > 0;
+      (window.applyTableLabels || (()=>{}))('tblIntervDone');
+    };
+  }
+
+  // Ré-exécute un render complet pour prendre en compte les remplacements
+  if (typeof window.renderAll === 'function'){
+    window.renderAll();
+  }
+})();
+
+(function enhanceMobilePanel(){
+  const panel   = document.getElementById('navPanel');
+  const inner   = panel?.querySelector('.nav-panel-inner');
+  const list    = panel?.querySelector('.nav-list');
+  const search  = panel?.querySelector('#navSearch');
+  const nameEl  = panel?.querySelector('#m_name');
+  const roleEl  = panel?.querySelector('#m_role');
+  const avatEl  = panel?.querySelector('#m_avatar');
+
+  if(!panel || !inner || !list) return;
+
+  /* 1) Observer l’état hidden -> toggle .is-open (slide + dim) */
+  const mo = new MutationObserver(() => {
+    const isOpen = panel.hidden === false;
+    panel.classList.toggle('is-open', isOpen);
+
+    if (isOpen){
+      // Remplir profil
+      const u = (window.currentUser||{}).user || 'Invité';
+      const r = (window.currentUser||{}).role || '—';
+      nameEl && (nameEl.textContent = u);
+      roleEl && (roleEl.textContent = r);
+      if (avatEl){
+        const init = (u||'').trim().split(/\s+/).map(s=>s[0]?.toUpperCase()).slice(0,2).join('') || '👤';
+        avatEl.textContent = init;
+      }
+      // Focus sur la recherche si présente
+      setTimeout(()=> search?.focus(), 30);
+    } else {
+      // Clear search à la fermeture
+      if (search && search.value){
+        search.value = '';
+        filterList('');
+      }
+    }
+  });
+  mo.observe(panel, { attributes:true, attributeFilter:['hidden'] });
+
+  /* 2) Backdrop : fermer si clic en dehors de la feuille */
+  panel.addEventListener('click', (e)=>{
+    if (e.target === panel){
+      // Simule le bouton fermer (ta logique existante s’en charge)
+      document.getElementById('menuClose')?.click();
+    }
+  });
+
+  /* 3) Recherche dans le menu */
+  function filterList(q){
+    const needle = (q||'').toLowerCase().trim();
+    list.querySelectorAll('.tab').forEach(btn=>{
+      const label = btn.textContent.toLowerCase();
+      btn.style.display = (!needle || label.includes(needle)) ? '' : 'none';
+    });
+  }
+  search?.addEventListener('input', e=> filterList(e.target.value));
+
+  /* 4) Petite amélioration d’état actif : synchronise quand on clique */
+  list.addEventListener('click', (e)=>{
+    const b = e.target.closest('.tab');
+    if(!b) return;
+    // L’onglet desktop va prendre le relais, on laisse faire.
+    // On ferme le panneau pour un ressenti “app”.
+    setTimeout(()=> document.getElementById('menuClose')?.click(), 10);
+  });
+
+})();
+
+</script>
 </body>
 </html>
